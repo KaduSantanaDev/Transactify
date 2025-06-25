@@ -1,6 +1,5 @@
 import { RabbitMQService } from '@app/rabbitmq/rabbitmq.service';
 import { Controller, Post, Body } from '@nestjs/common';
-import * as amqp from 'amqp-connection-manager';
 
 @Controller('producer-api')
 export class ProducerApiController {
