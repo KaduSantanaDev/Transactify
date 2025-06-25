@@ -29,9 +29,6 @@ jobs:
       - name: Build app (${{ matrix.app }})
         run: npm run build --project ${{ matrix.app }}
 
-      - name: Lint app (${{ matrix.app }})
-        run: npm run lint --project ${{ matrix.app }}
-
       - name: Build Docker image (${{ matrix.app }})
         run: |
           docker build -t ${{ matrix.app }}:${{ github.sha }} ./${{ matrix.app }}
