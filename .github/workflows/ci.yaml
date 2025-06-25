@@ -38,6 +38,7 @@ jobs:
       matrix:
         service: [producer-api, worker]
 
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,24 +46,17 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
-      - name: Install dependencies
-        working-directory: ${{ matrix.service }}
-        run: |
-          npm ci
+      - name: Install dependencies (root)
+        run: npm install
 
       - name: Lint code
-        working-directory: ${{ matrix.service }}
-        run: |
-          npm run lint
+        run: npm run lint
 
       - name: Run tests
-        working-directory: ${{ matrix.service }}
-        run: |
-          npm run test
+        run: npm run test
 
       - name: Build Docker image
-        working-directory: ${{ matrix.service }}
         run: |
-          docker build -t ${{ matrix.service }}:${{ github.sha }} .
+          docker build -t ${{ matrix.service }}:${{ github.sha }} -f apps/${{ matrix.service }}/Dockerfile .
