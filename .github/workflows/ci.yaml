@@ -5,32 +5,64 @@ on:
     branches:
       - develop
       - main
+  pull_request:
+    branches:
+      - develop
+      - main
 
 jobs:
-  build-docker:
+  build-and-test:
     runs-on: ubuntu-latest
+
+    services:
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+      postgres:
+        image: postgres:14
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: transactions
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     strategy:
       matrix:
-        app: [producer-api, worker]
-
-    name: build-docker (${{ matrix.app }})
+        service: [producer-api, worker]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '18'
 
-      - name: Install dependencies (root)
-        run: npm install
+      - name: Install dependencies
+        working-directory: ${{ matrix.service }}
+        run: |
+          npm ci
 
-      - name: Build app (${{ matrix.app }})
-        run: npm run build ${{ matrix.app }}
+      - name: Lint code
+        working-directory: ${{ matrix.service }}
+        run: |
+          npm run lint
 
+      - name: Run tests
+        working-directory: ${{ matrix.service }}
+        run: |
+          npm run test
 
-      - name: Build Docker image (${{ matrix.app }})
-        run: docker build -t ${{ matrix.app }}:${{ github.sha }} ./apps/${{ matrix.app }}
+      - name: Build Docker image
+        working-directory: ${{ matrix.service }}
+        run: |
+          docker build -t ${{ matrix.service }}:${{ github.sha }} .
