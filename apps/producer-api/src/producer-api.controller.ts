@@ -3,7 +3,7 @@ import { Controller, Post, Body } from '@nestjs/common';
 
 @Controller('producer-api')
 export class ProducerApiController {
-  constructor(private readonly rabbitMQService: RabbitMQService){}
+  constructor(private readonly rabbitMQService: RabbitMQService) {}
 
   @Post()
   async createTransaction(@Body() body: any) {
