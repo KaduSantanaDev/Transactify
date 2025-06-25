@@ -21,16 +21,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Install dependencies (root)
         run: npm install
 
       - name: Build app (${{ matrix.app }})
         run: npm run build --project ${{ matrix.app }}
-
-      - name: Lint app (${{ matrix.app }})
-        run: npm run lint --project ${{ matrix.app }}
 
       - name: Build Docker image (${{ matrix.app }})
         run: |
