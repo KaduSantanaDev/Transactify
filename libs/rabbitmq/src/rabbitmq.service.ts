@@ -6,8 +6,10 @@ import { ChannelWrapper } from 'amqp-connection-manager';
 export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
   private connection;
   private channelWrapper: ChannelWrapper;
+  private readyPromise: Promise<void>;
+  private resolveReady: () => void;
 
-  async onModuleInit() {
+  async init() {
     this.connection = amqp.connect(['amqp://guest:guest@rabbitmq:5672']);
 
     this.channelWrapper = this.connection.createChannel({
@@ -16,14 +18,33 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
         channel.assertQueue('transactions_queue', { durable: true }),
     });
 
-    console.log('RabbitMQ connected and channel ready');
+    this.readyPromise = new Promise((resolve) => {
+      this.resolveReady = resolve;
+    });
+
+    this.connection.on('connect', () => {
+      console.log('RabbitMQ connected');
+      this.resolveReady();
+    });
+
+    this.connection.on('disconnect', (err) => {
+      console.error('RabbitMQ disconnected', err);
+    });
+  }
+
+  async onModuleInit() {
+    await this.init();
+    console.log('RabbitMQ init done');
   }
 
   async sendToQueue(queue: string, message: any) {
+    await this.readyPromise;
     await this.channelWrapper.sendToQueue(queue, message);
   }
 
   async addConsumer(queue: string, onMessage: (msg: any) => Promise<void>) {
+    await this.readyPromise;
+
     await this.channelWrapper.addSetup((channel) =>
       channel.consume(
         queue,
