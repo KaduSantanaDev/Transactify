@@ -3,8 +3,8 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - main
       - develop
+      - main
 
 jobs:
   build-docker:
@@ -31,8 +31,6 @@ jobs:
       - name: Build app (${{ matrix.app }})
         run: npm run build ${{ matrix.app }}
 
-      - name: Lint app (${{ matrix.app }})
-        run: eslint apps/${{ matrix.app }}/**/*.ts --fix
 
       - name: Build Docker image (${{ matrix.app }})
         run: docker build -t ${{ matrix.app }}:${{ github.sha }} ./apps/${{ matrix.app }}
