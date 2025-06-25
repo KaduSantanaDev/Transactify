@@ -1,0 +1,36 @@
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"      # Fila
+      - "15672:15672"    # Dashboard
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  postgres:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: transactions
+
+  producer-api:
+    build: 
+      context: .
+      dockerfile: ./apps/producer-api/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rabbitmq
+
+  worker:
+    build: 
+      context: .
+      dockerfile: ./apps/worker/Dockerfile
+    depends_on:
+      - rabbitmq
+      - postgres
