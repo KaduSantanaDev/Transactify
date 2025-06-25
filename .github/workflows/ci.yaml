@@ -7,7 +7,7 @@ on:
       - develop
 
 jobs:
-  build-test-docker:
+  build-docker:
     runs-on: ubuntu-latest
 
     strategy:
