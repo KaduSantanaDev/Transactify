@@ -5,8 +5,7 @@ on:
 
 jobs:
   delivery:
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest  
     steps:
       - name: Setup doctl
         uses: digitalocean/action-doctl@v2
