@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: producer-api
+  template:
+    metadata:
+      labels:
+        app: producer-api
+    spec:
+      containers:
+        - name: producer-api
+          image: kaduzera/producer-api:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: RABBITMQ_URL
+              value: amqp://guest:guest@rabbitmq:5672
+            - name: DATABASE_URL
+              value: postgres://user:password@postgres:5432/transactions
