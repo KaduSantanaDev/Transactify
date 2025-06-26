@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: producer-api
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: producer-api
@@ -20,5 +20,9 @@ spec:
           env:
             - name: RABBITMQ_URL
               value: amqp://guest:guest@rabbitmq:5672
-            - name: DATABASE_URL
-              value: postgres://user:password@postgres:5432/transactions
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
