@@ -6,7 +6,8 @@ spec:
   selector:
     app: producer-api
   ports:
-    - protocol: TCP
+    - name: producer-api
+      protocol: TCP
       port: 80
       targetPort: 3000
   type: LoadBalancer
