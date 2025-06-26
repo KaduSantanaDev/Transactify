@@ -26,7 +26,7 @@ jobs:
         uses: Azure/k8s-deploy@v5
         with:
           manifests: |
-            ../../k8s
+            ./k8s
           images: |
             kaduzera/worker:latest
             kaduzera/producer-api:latest
